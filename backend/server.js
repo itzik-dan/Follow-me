@@ -17,11 +17,11 @@ app.use(require("./routes/post"));
 app.use(require("./routes/user"));
 app.use(require("./routes/uploadImage"));
 
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.resolve("uploads")));
 
 app.use(errorHandler);
 
-// console.log(path.resolve("frontend", "build", "index.html"));
+// console.log(path.resolve("uploads"));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === "production") {
