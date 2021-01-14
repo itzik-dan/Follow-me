@@ -1,11 +1,11 @@
-import {React, useState, useEffect } from "react";
+import { React, useState, useEffect } from "react";
 import { Spin } from "antd";
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { register } from "../actions/userActions";
-import axios from 'axios'
+import axios from "axios";
 
-const RegisterScreen = ({history}) => {
+const RegisterScreen = ({ history }) => {
 	const [name, setName] = useState("");
 	const [password, setPassword] = useState("");
 	const [email, setEmail] = useState("");
@@ -42,15 +42,14 @@ const RegisterScreen = ({history}) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		dispatch(register(name, email, password, photo))
+		dispatch(register(name, email, password, photo));
 	};
 
 	useEffect(() => {
 		if (userInfo) {
-			history.push('/')
+			history.push("/");
 		}
-	}, [history, userInfo])
-
+	}, [history, userInfo]);
 
 	const registerForm = () => (
 		<form onSubmit={handleSubmit}>
@@ -78,7 +77,7 @@ const RegisterScreen = ({history}) => {
 			<div className="form-group">
 				<input
 					type="password"
-					placeholder="Password"
+					placeholder="Password (at least 6 characters)"
 					className="form-control"
 					value={password}
 					onChange={(e) => setPassword(e.target.value)}
@@ -86,14 +85,22 @@ const RegisterScreen = ({history}) => {
 			</div>
 
 			<div className="form-group">
-				<label>Upload an image:</label><br />
-				<input type="file" onChange={uploadFileHandler} className="pt-2" />
+				<label>Upload an image:</label>
+				<br />
+				<input
+					type="file"
+					onChange={uploadFileHandler}
+					className="pt-2"
+				/>
 				{uploading && <Spin />}
 			</div>
 
-
 			<br />
-			<button type="submit" className="btn btn-raised">
+			<button
+				type="submit"
+				className="btn btn-raised"
+				disabled={!name || !email || password.length < 6 || !photo}
+			>
 				Register
 			</button>
 		</form>
@@ -103,17 +110,10 @@ const RegisterScreen = ({history}) => {
 		<div className="container p-5">
 			<div className="row">
 				<div className="col-md-6 offset-md-3">
-					{loading ? (
-						<Spin size="large" />
-					) : (
-						<h2>Register</h2>
-					)}
+					{loading ? <Spin size="large" /> : <h2>Register</h2>}
 					{registerForm()}
 
-					<Link
-						to="/login"
-						className="float-right text-danger"
-					>
+					<Link to="/login" className="float-right text-danger">
 						Have an account?
 					</Link>
 				</div>
