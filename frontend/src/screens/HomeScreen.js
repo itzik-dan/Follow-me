@@ -111,7 +111,7 @@ const HomeScreen = ({ history }) => {
 										icon={<UserOutlined />}
 									/>
 								}
-								title={item.postedBy.name}
+								title={`${item.postedBy.name} - ${item.title}`}
 								description={item.body}
 							/>
 							<hr />
