@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, Image, Spin } from "antd";
+import { Card, Image, Avatar, Spin } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { UPDATE_PIC } from "../types/userTypes";
 import { Link } from "react-router-dom";
@@ -11,6 +11,7 @@ const ProfileScreen = ({ history }) => {
 	// State for storing logged in user posts
 	const [myPosts, setMyPosts] = useState([]);
 	const [uploading, setUploading] = useState(false);
+	const [image, setImage] = useState("");
 
 	const dispatch = useDispatch();
 
@@ -34,25 +35,29 @@ const ProfileScreen = ({ history }) => {
 		}
 	}, [history, userInfo]);
 
-	const uploadFileHandler = async (e) => {
-		const file = e.target.files[0];
-		const formData = new FormData();
-		formData.append("image", file);
-		setUploading(true);
+	useEffect(() => {
+		if (image) {
+			uploadFields(image);
+		}
+	// eslint-disable-next-line
+	}, [image]);
 
+	const uploadFields = async (base64EncodedImage) => {
+		// console.log(base64EncodedImage);
+		setUploading(true);
+		const formData = { data: base64EncodedImage };
 		try {
 			const config = {
 				headers: {
-					"Content-Type": "multipart/form-data",
+					"Content-Type": "application/json",
 				},
 			};
-
+			// api call to backend to store image on cloudinary
 			const { data } = await axios.post("/upload", formData, config);
-
 			// Updating db with the newly updated profile pic
 			await axios.put(
 				"/update-profile-pic",
-				{ photo: data },
+				{ photo: data.url },
 				{
 					headers: {
 						Authorization: `Bearer ${userInfo.token}`,
@@ -62,10 +67,10 @@ const ProfileScreen = ({ history }) => {
 			// Updating localStorage with the newly updated profile pic
 			localStorage.setItem(
 				"userInfo",
-				JSON.stringify({ ...userInfo, photo: data })
+				JSON.stringify({ ...userInfo, photo: data.url })
 			);
 			// Updating Redux state with the newly updated profile pic
-			dispatch({ type: UPDATE_PIC, payload: data });
+			dispatch({ type: UPDATE_PIC, payload: data.url });
 			setUploading(false);
 		} catch (e) {
 			console.log(e);
@@ -73,19 +78,33 @@ const ProfileScreen = ({ history }) => {
 		}
 	};
 
+	const handleFileInputChange = (e) => {
+		const file = e.target.files[0];
+		const reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onloadend = () => {
+			setImage(reader.result);
+		};
+	};
+
 	return (
 		<div>
-			<div className="row" style={{ borderBottom: "2px solid grey" }}>
+			<div className="row mt-2" style={{ borderBottom: "2px solid grey" }}>
 				<div className="col-md-6">
-					<Image width={400} src={userInfo.photo} />
+				<Avatar
+				  src={<Image src={userInfo.photo} />}
+				  size={400}
+				  shape="square" 
+				/>
 					<br />
 					<div className="form-group">
 						<label>Update image:</label>
 						<br />
 						<input
 							type="file"
-							onChange={uploadFileHandler}
+							onChange={handleFileInputChange}
 							className="pt-2"
+							accept="image/*"
 						/>
 						{uploading && <Spin />}
 					</div>
@@ -95,7 +114,7 @@ const ProfileScreen = ({ history }) => {
 						<Card
 							title={<h2>{userInfo.name}</h2>}
 							bordered={false}
-							style={{ width: 300 }}
+							style={{ width: 300, height: 300 }}
 						>
 							<h5>{myPosts.length} posts</h5> <br />
 							<h5>

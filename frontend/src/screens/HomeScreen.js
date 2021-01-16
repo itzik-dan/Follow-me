@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Card, Avatar, Spin, Tooltip } from "antd";
 import {
 	UserOutlined,
@@ -19,7 +19,6 @@ import { toast } from "react-toastify";
 const { Meta } = Card;
 
 const HomeScreen = ({ history }) => {
-	const [text, setText] = useState("");
 	const dispatch = useDispatch();
 
 	// fetching logged in user info
@@ -40,13 +39,13 @@ const HomeScreen = ({ history }) => {
 
 	return (
 		<div className="row">
-			<div className="col-md-6 offset-md-3">
-				{loading ? (
-					<Spin size="large" />
-				) : error ? (
-					toast.error(error)
-				) : (
-					posts.map((item) => (
+			{loading ? (
+				<Spin size="large" />
+			) : error ? (
+				toast.error(error)
+			) : (
+				posts.map((item) => (
+					<div className="col-md-6" key={item._id}>
 						<Card
 							key={item._id}
 							hoverable
@@ -131,8 +130,8 @@ const HomeScreen = ({ history }) => {
 							<form
 								onSubmit={(e) => {
 									e.preventDefault();
-									dispatch(addComment(item._id, text));
-									setText("");
+									dispatch(addComment(item._id, e.target[0].value));
+									e.target.reset();
 								}}
 							>
 								<input
@@ -140,14 +139,15 @@ const HomeScreen = ({ history }) => {
 									placeholder="Leave a comment"
 									className="form-control my-4 "
 									required
-									value={text}
-									onChange={(e) => setText(e.target.value)}
 								/>
 							</form>
+							<small>
+								Posted on: {item.createdAt.substring(0, 10)}
+							</small>
 						</Card>
-					))
-				)}
-			</div>
+					</div>
+				))
+			)}
 		</div>
 	);
 };

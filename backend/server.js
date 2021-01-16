@@ -9,7 +9,7 @@ const { errorHandler } = require("./middleware/errorMiddleware.js");
 connectDB();
 
 //Middleware for accepting json data in the req body
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
 
 // routes middleware
 app.use(require("./routes/auth"));
@@ -17,11 +17,8 @@ app.use(require("./routes/post"));
 app.use(require("./routes/user"));
 app.use(require("./routes/uploadImage"));
 
-app.use("/uploads", express.static(path.resolve("uploads")));
-
 app.use(errorHandler);
 
-// console.log(path.resolve("uploads"));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === "production") {

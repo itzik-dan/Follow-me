@@ -4,31 +4,46 @@ import { Spin } from "antd";
 import { useDispatch } from "react-redux";
 import { createPost } from "../actions/postActions";
 
-const AddPost = ({history}) => {
+const AddPost = ({ history }) => {
 	const [title, setTitle] = useState("");
 	const [body, setBody] = useState("");
-	const [photo, setPhoto] = useState("");
+	const [previewSource, setPreviewSource] = useState("");
 	const [uploading, setUploading] = useState(false);
 
 	const dispatch = useDispatch();
 
-	const uploadFileHandler = async (e) => {
+	const handleFileInputChange = (e) => {
 		const file = e.target.files[0];
-		const formData = new FormData();
-		formData.append("image", file);
-		setUploading(true);
+		previewFile(file);
+	};
 
+	// Function for previewing selected file
+	const previewFile = (file) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onloadend = () => {
+			setPreviewSource(reader.result);
+		};
+	};
+
+	const uploadFields = async (base64EncodedImage) => {
+		// console.log(base64EncodedImage);
+		setUploading(true);
+		const formData = { data: base64EncodedImage };
 		try {
 			const config = {
 				headers: {
-					"Content-Type": "multipart/form-data",
+					"Content-Type": "application/json",
 				},
 			};
-
+			// api call to backend to store image on cloudinary
 			const { data } = await axios.post("/upload", formData, config);
-
-			setPhoto(data);
+			// fetch response image url from cloudinary
+			const photo = data.url;
+			// calling createPost action with the data user nourished
+			dispatch(createPost(title, body, photo));
 			setUploading(false);
+			history.push("/");
 		} catch (e) {
 			console.log(e);
 			setUploading(false);
@@ -36,9 +51,8 @@ const AddPost = ({history}) => {
 	};
 
 	const handleSubmit = (e) => {
-		e.preventDefault()
-		dispatch(createPost(title, body, photo))
-		history.push("/")
+		e.preventDefault();
+		uploadFields(previewSource);
 	};
 
 	return (
@@ -66,13 +80,32 @@ const AddPost = ({history}) => {
 			</div>
 
 			<div className="form-group">
-				<label>Upload an image:</label><br />
-				<input type="file" onChange={uploadFileHandler} className="pt-2" />
+				<label>Upload an image:</label>
+				<br />
+				<input
+					type="file"
+					onChange={handleFileInputChange}
+					className="pt-2"
+					name="file"
+					accept="image/*"
+				/>
 				{uploading && <Spin />}
 			</div>
 			<div className="text-center">
-				<button className="btn btn-outline-info ">Submit</button>
+				<button
+					className="btn btn-outline-info "
+					disabled={!title || !body || !previewSource}
+				>
+					Submit
+				</button>
 			</div>
+			{previewSource && (
+				<img
+					src={previewSource}
+					alt=" chosen"
+					style={{ height: "300px" }}
+				/>
+			)}
 		</form>
 	);
 };

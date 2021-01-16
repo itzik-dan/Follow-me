@@ -9,7 +9,8 @@ const RegisterScreen = ({ history }) => {
 	const [name, setName] = useState("");
 	const [password, setPassword] = useState("");
 	const [email, setEmail] = useState("");
-	const [photo, setPhoto] = useState(undefined);
+	// State for storing the image as preview before uploading to cloudinary
+	const [previewSource, setPreviewSource] = useState('');
 	const [uploading, setUploading] = useState(false);
 
 	const dispatch = useDispatch();
@@ -17,22 +18,36 @@ const RegisterScreen = ({ history }) => {
 
 	const { loading, userInfo } = userRegister;
 
-	const uploadFileHandler = async (e) => {
+	const handleFileInputChange = (e) => {
 		const file = e.target.files[0];
-		const formData = new FormData();
-		formData.append("image", file);
-		setUploading(true);
+		previewFile(file);
+	};
 
+	// Function for previewing selected file 
+	const previewFile = (file) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onloadend = () => {
+			setPreviewSource(reader.result);
+		};
+	};
+
+	const uploadFields = async (base64EncodedImage) => {
+		// console.log(base64EncodedImage);
+		setUploading(true);
+		const formData = { data: base64EncodedImage };
 		try {
 			const config = {
 				headers: {
-					"Content-Type": "multipart/form-data",
+					"Content-Type": "application/json",
 				},
 			};
-
+			// api call to backend to store image on cloudinary
 			const { data } = await axios.post("/upload", formData, config);
-
-			setPhoto(data);
+			// fetch response image url from cloudinary
+			const photo = data.url
+			// calling resiter action to sigin up user with all the details
+			dispatch(register(name, email, password, photo));
 			setUploading(false);
 		} catch (e) {
 			console.log(e);
@@ -40,11 +55,12 @@ const RegisterScreen = ({ history }) => {
 		}
 	};
 
-	const handleSubmit = async (e) => {
+	const handleSubmit = (e) => {
 		e.preventDefault();
-		dispatch(register(name, email, password, photo));
+		uploadFields(previewSource)
 	};
 
+	// If user is authenticated redirect to home page
 	useEffect(() => {
 		if (userInfo) {
 			history.push("/");
@@ -89,8 +105,10 @@ const RegisterScreen = ({ history }) => {
 				<br />
 				<input
 					type="file"
-					onChange={uploadFileHandler}
+					onChange={handleFileInputChange}
 					className="pt-2"
+					name="file"
+					accept="image/*"
 				/>
 				{uploading && <Spin />}
 			</div>
@@ -99,10 +117,18 @@ const RegisterScreen = ({ history }) => {
 			<button
 				type="submit"
 				className="btn btn-raised"
-				disabled={!name || !email || password.length < 6 || !photo}
+				disabled={!name || !email || password.length < 6 || !previewSource}
 			>
 				Register
 			</button>
+			<br />
+			{previewSource && (
+				<img
+					src={previewSource}
+					alt=" chosen"
+					style={{ height: "300px" }}
+				/>
+			)}
 		</form>
 	);
 
