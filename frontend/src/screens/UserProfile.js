@@ -8,6 +8,8 @@ const { Meta } = Card;
 const ProfileScreen = ({ history, match }) => {
 	// State for presenting profile once fetched from backend
 	const [profile, setProfile] = useState(null);
+	// Loading state for follow/unfollow button, this will prevent multiple follow clicks
+	const [loading, setLoading] = useState(false);
 
 	const { id } = match.params;
 	const dispatch = useDispatch();
@@ -15,7 +17,7 @@ const ProfileScreen = ({ history, match }) => {
 	const userLogin = useSelector((state) => state.userLogin);
 	const { userInfo } = userLogin;
 
-	const { following } = JSON.parse(localStorage.getItem("userInfo"))
+	const { following } = JSON.parse(localStorage.getItem("userInfo"));
 
 	useEffect(() => {
 		if (!userInfo) {
@@ -33,6 +35,7 @@ const ProfileScreen = ({ history, match }) => {
 	}, [history, id, userInfo]);
 
 	const followUser = async () => {
+		setLoading(true);
 		const config = {
 			headers: {
 				Authorization: `Bearer ${userInfo.token}`,
@@ -73,9 +76,11 @@ const ProfileScreen = ({ history, match }) => {
 				},
 			};
 		});
+		setLoading(false);
 	};
 
 	const unfollowUser = async () => {
+		setLoading(true);
 		const config = {
 			headers: {
 				Authorization: `Bearer ${userInfo.token}`,
@@ -116,6 +121,7 @@ const ProfileScreen = ({ history, match }) => {
 				},
 			};
 		});
+		setLoading(false);
 	};
 
 	return (
@@ -129,10 +135,7 @@ const ProfileScreen = ({ history, match }) => {
 						style={{ borderBottom: "2px solid grey" }}
 					>
 						<div className="col-md-6">
-							<Image
-								width={400}
-								src={profile.user.photo}
-							/>
+							<Image width={400} src={profile.user.photo} />
 						</div>
 						<div className="col-md-6">
 							<div className="site-card-border-less-wrapper">
@@ -153,7 +156,10 @@ const ProfileScreen = ({ history, match }) => {
 										{profile.user.following.length}
 									</h5>
 									<br />
-									{following && following.includes(profile.user._id) ? (
+									{loading ? (
+										<Spin size="large" />
+									) : following &&
+									  following.includes(profile.user._id) ? (
 										<button
 											type="button"
 											onClick={() => unfollowUser()}
@@ -170,7 +176,6 @@ const ProfileScreen = ({ history, match }) => {
 											Follow
 										</button>
 									)}
-
 								</Card>
 							</div>
 						</div>
@@ -197,6 +202,10 @@ const ProfileScreen = ({ history, match }) => {
 										title={item.title}
 										description={item.body}
 									/>
+									<small>
+										Posted on:{" "}
+										{item.createdAt.substring(0, 10)}
+									</small>
 								</Card>
 							</div>
 						))}

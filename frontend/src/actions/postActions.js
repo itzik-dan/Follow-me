@@ -10,6 +10,7 @@ import {
 	ADD_COMMENT,
 	DELETE_POST_REQUEST,
 	DELETE_POST_SUCCESS,
+	LOAD_UPDATE_LIKES
 } from "../types/postTypes";
 import { toast } from "react-toastify";
 
@@ -122,6 +123,8 @@ export const addLike = (id) => async (dispatch, getState) => {
 			userLogin: { userInfo },
 		} = getState();
 
+		dispatch({type: LOAD_UPDATE_LIKES});
+
 		const { data } = await axios.put(
 			"/like",
 			{ postId: id },
@@ -152,6 +155,8 @@ export const removeLike = (id) => async (dispatch, getState) => {
 		const {
 			userLogin: { userInfo },
 		} = getState();
+
+		dispatch({type: LOAD_UPDATE_LIKES});
 
 		const { data } = await axios.put(
 			"/unlike",

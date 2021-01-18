@@ -7,11 +7,12 @@ import {
 	FireFilled,
 	PlusOutlined,
 	SettingOutlined,
-	UsergroupAddOutlined
+	UsergroupAddOutlined,
+	HeartOutlined
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-// import Search from "../forms/Search";
+import SearchBox from './SearchBox'
 import { logout } from '../actions/userActions'
 
 const { SubMenu, Item } = Menu;
@@ -71,8 +72,17 @@ const Header = () => {
 						key="list"
 						className="float-right"
 					>
-						<Link to="/followingPosts"><UsergroupAddOutlined />Following</Link>
+						<Link to="/followingPosts"><HeartOutlined />Following</Link>
 					</Item>
+					<Item
+						key="users"
+						className="float-right"
+					>
+						<Link to="/users"><UsergroupAddOutlined />Users</Link>
+					</Item>
+					<span className="float-right p-1">
+						<SearchBox />
+					</span>
 				</Fragment>
 			)}
 

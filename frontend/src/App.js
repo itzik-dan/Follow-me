@@ -11,6 +11,7 @@ import RegisterScreen from "./screens/RegisterScreen";
 import AddPost from "./screens/AddPost";
 import UserProfile from "./screens/UserProfile";
 import FollowingPage from "./screens/FollowingPage";
+import AllUsers from "./screens/AllUsers";
 
 const App = () => {
   return (
@@ -24,6 +25,8 @@ const App = () => {
         <Route path='/create' component={AddPost} />
         <Route path='/profile/:id' component={UserProfile} />
         <Route path='/followingPosts' component={FollowingPage} />
+        <Route path='/search/:keyword' component={AllUsers} />
+        <Route path='/users' component={AllUsers} />
         <Route path='/' component={HomeScreen} exact />
       </section>
       <Footer />

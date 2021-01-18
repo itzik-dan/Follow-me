@@ -9,7 +9,8 @@ import {
 	UPDATE_LIKES,
 	ADD_COMMENT,
 	DELETE_POST_REQUEST,
-	DELETE_POST_SUCCESS
+	DELETE_POST_SUCCESS,
+	LOAD_UPDATE_LIKES
 } from "../types/postTypes";
 
 //Reducer for createing a post
@@ -40,6 +41,8 @@ export const postListReducer = (state = { posts: [] }, action) => {
 			};
 		case POST_LIST_FAIL:
 			return { ...state, loading: false, error: action.payload };
+		case LOAD_UPDATE_LIKES:
+			return { ...state, loadingLikes: true };
 		case UPDATE_LIKES:
 			return {
 				...state,
@@ -48,6 +51,7 @@ export const postListReducer = (state = { posts: [] }, action) => {
 						? { ...post, likes: action.payload.likes }
 						: post
 				),
+				loadingLikes: false
 			};
 		case ADD_COMMENT:
 			return {

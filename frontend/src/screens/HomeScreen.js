@@ -27,7 +27,7 @@ const HomeScreen = ({ history }) => {
 
 	// fetching  list of posts from redux state
 	const postList = useSelector((state) => state.postList);
-	const { loading, error, posts } = postList;
+	const { loading, error, posts, loadingLikes } = postList;
 
 	useEffect(() => {
 		if (!userInfo) {
@@ -74,7 +74,9 @@ const HomeScreen = ({ history }) => {
 								</Tooltip>,
 							]}
 						>
-							{item.likes.includes(userInfo._id) ? (
+							{loadingLikes ? (
+								<Spin size="large" />
+							) : item.likes.includes(userInfo._id) ? (
 								<DislikeOutlined
 									style={{
 										fontSize: "30px",
@@ -130,7 +132,9 @@ const HomeScreen = ({ history }) => {
 							<form
 								onSubmit={(e) => {
 									e.preventDefault();
-									dispatch(addComment(item._id, e.target[0].value));
+									dispatch(
+										addComment(item._id, e.target[0].value)
+									);
 									e.target.reset();
 								}}
 							>

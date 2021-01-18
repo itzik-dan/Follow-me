@@ -12,10 +12,10 @@ import {
 	removeLike,
 	addComment,
 	deletePost,
-	listFollowingPosts
+	listFollowingPosts,
 } from "../actions/postActions";
 import { toast } from "react-toastify";
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 const { Meta } = Card;
 
@@ -29,7 +29,7 @@ const FollowingPage = ({ history }) => {
 
 	// fetching  list of posts from redux state
 	const postList = useSelector((state) => state.postList);
-	const { loading, error, posts } = postList;
+	const { loading, error, posts, loadingLikes } = postList;
 
 	useEffect(() => {
 		if (!userInfo) {
@@ -76,7 +76,9 @@ const FollowingPage = ({ history }) => {
 								</Tooltip>,
 							]}
 						>
-							{item.likes.includes(userInfo._id) ? (
+							{loadingLikes ? (
+								<Spin size="large" />
+							) : item.likes.includes(userInfo._id) ? (
 								<DislikeOutlined
 									style={{
 										fontSize: "30px",
@@ -146,8 +148,14 @@ const FollowingPage = ({ history }) => {
 								/>
 							</form>
 						</Card>
-					)) 
-				): <h1>You are not following anyone!<br/><br /> <Link to="/">Start following</Link></h1>}
+					))
+				) : (
+					<h1>
+						You are not following anyone!
+						<br />
+						<br /> <Link to="/">Start following</Link>
+					</h1>
+				)}
 			</div>
 		</div>
 	);

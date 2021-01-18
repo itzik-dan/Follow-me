@@ -7,10 +7,13 @@ const {
 	getUserProfile,
 	followUser,
 	unfollowUser,
-	updateProfilePic
+	updateProfilePic,
+	getUsers
 } = require("../controllers/userController");
 
 router.get("/user/:id", protect, getUserProfile);
+
+router.get("/users", protect, getUsers);
 
 router.put("/follow", protect, followUser);
 
