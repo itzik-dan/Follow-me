@@ -30,7 +30,7 @@ const AllUsers = ({ history, match }) => {
 	return (
 		<div className="row">
 			{loading ? (
-				<Spin size="large" />
+				<Spin style={{ margin: "auto" }} size="large" />
 			) : error ? (
 				toast.error(error)
 			) : users.length ? (

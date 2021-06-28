@@ -18,7 +18,7 @@ const App = () => {
     <Router>
       <Header />
       <ToastContainer />
-      <section className="container py-3" style={{backgroundColor: '#FAFAFA'}}>
+      <section className="container py-4" style={{backgroundColor: '#FAFAFA'}}>
         <Route path='/register' component={RegisterScreen} />
         <Route path='/login' component={LoginScreen} />
         <Route path='/profile' component={ProfileScreen} exact/>

@@ -127,7 +127,7 @@ const ProfileScreen = ({ history, match }) => {
 	return (
 		<Fragment>
 			{!profile ? (
-				<Spin size="large" />
+				<Spin style={{ marginLeft: "500px" }} size="large" />
 			) : (
 				<div>
 					<div

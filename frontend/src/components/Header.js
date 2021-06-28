@@ -34,7 +34,7 @@ const Header = () => {
 	};
 
 	return (
-		<Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal">
+		<Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal" theme="dark">
 			<Item key="home" icon={<FireFilled />}>
 				<Link to="/">
 					<strong>FollowMe</strong>
